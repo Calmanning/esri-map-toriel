@@ -33,7 +33,38 @@ require([
     view.ui.add(sketch, "top-right");
     
     sketch.on("update", (event) => {
-        
+        if(event.state === "start"){
+            queryFeatureLayer(event.graphics[0].geometry);
+        }
+        if(event.state === "complete"){
+            graphicsLayerSketch.remove(event.graphics[0]);
+        }
+        if(event.toolEventInfo && (event.toolEventInfo.type === "scale-stop" || 
+                                   event.toolEventInfo.type === "reshape-stop" || 
+                                   event.toolEventInfo.type === "move-stop")){
+            queryFeatureLayer(event.graphics[0].geometry);
+                                   }
+    })
+
+    const featureLayer = new FeatureLayer({
+        url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/LA_County_Parcels/FeatureServer/0"
+    })
+
+    const queryFeatureLayer = ((geometry) => {
+
+        const parcelQuery = {
+            spatialRelationship: "intersects",
+            geometry:geometry,
+            outFields: ["APN", "UseType", "TaxRateCity", "Roll_LandValue"],
+            returnGeometery: true
+        }
+        console.log(geometry);
+        featureLayer.queryFeatures(parcelQuery)
+        .then((result) => {
+            console.log("Features returned from the query: " + result.features.length)
+        }).catch((err) => {
+            console.log(err);
+        });
     })
 
     console.log("this is the end")
