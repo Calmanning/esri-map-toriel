@@ -32,34 +32,9 @@ require([
     });
     view.ui.add(sketch, "top-right");
     
+    sketch.on("update", (event) => {
+        
+    })
+
     console.log("this is the end")
 });
-
-// require([
-// "esri/config",
-//       "esri/Map",
-//       "esri/views/MapView",
-
-//       "esri/widgets/Sketch",
-//       "esri/layers/GraphicsLayer",
-//       "esri/layers/FeatureLayer"
-
-//     ], function(esriConfig,Map, MapView, Sketch, GraphicsLayer, FeatureLayer) {
-
-//       esriConfig.apiKey = "AAPK115d19ab66264ef1b7cdbdd54b6804f4whm-2t82h02UCQQ1zigAlbT-GPsbqzkH4Cd1xDjXtPoshgyibnsGBM4zg-eklxut";
-
-//       const map = new Map({
-//         basemap: "arcgis-topographic" //Basemap layer service
-//       });
-
-//       const view = new MapView({
-//         container: "viewDiv",
-//         map: map,
-//         center: [-118.80543,34.03000], //Longitude, latitude
-//         zoom: 13
-//       });
-
-//       // Add sketch widget
-//       const graphicsLayerSketch = new GraphicsLayer();
-//       map.add(graphicsLayerSketch);
-//     });
