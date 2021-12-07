@@ -39,7 +39,63 @@ require([
                 option.value = query;
                 sqlSelect.appendChild(option);
             }))
-            view.ui.add(sqlSelect, "top-right")
+            view.ui.add(sqlSelect, "top-right");
+
+        sqlSelect.addEventListener('change', (event) => {
+            whereClause = event.target.value;
+            query(view.extent)
+        });
+
+        const parcelLayer = new FeatureLayer ({
+            url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/LA_County_Parcels/FeatureServer/0"
+        })
+
+        const query = function queryFeatureLayer(extent) {
+
+            const parcelQuery = {
+                where: whereClause,
+                spatialPropery: "intersects",
+                geometry: extent,
+                outFields: ["APN", "UseType", "TaxRateCity", "Roll_LandValue"],
+                returnGeometry: true
+            }
+
+            parcelLayer.queryFeatures(parcelQuery).
+            then((results) => {
+                console.log(results.features.length);
+            displayResults(results)}).
+                catch((err) => {
+                    console.log("here's what went wrong: " + err)
+                })
+        }
+       
+        function displayResults(results){
+
+            const symbol = {
+                type: "simple-fill",
+                color: [20, 130, 200, 0.5],
+                outline:{
+                    color: "white",
+                    width: 1
+                }
+            }
+            
+            const popupTemplate = {
+                title: "Parcel {APN}",
+                content: "Type: {UseType} <br> Land value: {Roll_LandValue} <br> Tax Rate City: {TaxRateCity}"
+            };
+
+            results.features.map((results) => {
+                results.symbol = symbol;
+                results.popupTemplate = popupTemplate;
+                return results;        
+            });
+
+            view.popup.close()
+            view.graphics.removeAll();
+            view.graphics.addMany(results.features)
+
+        }
 
 console.log("nobody came")
     });
