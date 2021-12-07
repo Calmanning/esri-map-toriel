@@ -50,22 +50,52 @@ require([
         url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/LA_County_Parcels/FeatureServer/0"
     })
 
-    const queryFeatureLayer = ((geometry) => {
+    function queryFeatureLayer(geometry) {
 
         const parcelQuery = {
             spatialRelationship: "intersects",
-            geometry:geometry,
+            geometry: geometry,
             outFields: ["APN", "UseType", "TaxRateCity", "Roll_LandValue"],
-            returnGeometery: true
+            returnGeometry: true
         }
         console.log(geometry);
         featureLayer.queryFeatures(parcelQuery)
-        .then((result) => {
-            console.log("Features returned from the query: " + result.features.length)
+        .then((results) => {
+            console.log("Features returned from the query: " + results.features.length)
+            displayResults(results)
         }).catch((err) => {
             console.log(err);
         });
-    })
+    };
 
+    function displayResults(results) {
+
+        const symbol = {
+            type: "simple-fill",
+            color: [ 20, 130, 200, 0.5 ],
+            outline: {
+                color: "white",
+                width: 0.5
+            },
+        };
+
+        const popupTemplate = {
+            title: "Parcel {APN}",
+            content: `Type: {UseType} <br>
+                       Land value: {Roll_LandValue} <br>
+                       Tax Rate City: {TaxRateCity}`
+        };
+
+        results.features.map((feature) => {
+            feature.symbol = symbol;
+            feature.popupTemplate = popupTemplate;
+            return feature
+        });
+
+        view.popup.close();
+        view.graphics.removeAll();
+        view.graphics.addMany(results.features);
+    }
     console.log("this is the end")
 });
+
