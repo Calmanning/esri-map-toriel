@@ -63,6 +63,11 @@ require([
             parcelLayer.queryFeatures(parcelQuery).
             then((results) => {
                 console.log(results.features.length);
+                console.log(results.features);
+                //this is how you would get the outfields to appear in the response.
+                results.features.forEach((hit) =>{
+                    console.log(hit.attributes)         
+                })
             displayResults(results)}).
                 catch((err) => {
                     console.log("here's what went wrong: " + err)
