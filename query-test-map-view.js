@@ -4,8 +4,9 @@ require([
     "esri/config",
     "esri/Map",
     "esri/views/MapView",
-    "esri/layers/FeatureLayer"
-    ], (esriConfig, Map, MapView, FeatureLayer) => {
+    "esri/layers/FeatureLayer",
+    "esri/widgets/FeatureTable"
+    ], (esriConfig, Map, MapView, FeatureLayer, FeatureTable) => {
 
         esriConfig.apiKey = "AAPK115d19ab66264ef1b7cdbdd54b6804f4whm-2t82h02UCQQ1zigAlbT-GPsbqzkH4Cd1xDjXtPoshgyibnsGBM4zg-eklxut" 
 
@@ -50,6 +51,17 @@ require([
             url: "https://services3.arcgis.com/GVgbJbqm8hXASVYi/arcgis/rest/services/LA_County_Parcels/FeatureServer/0"
         })
 
+        const featureTable = new FeatureTable ({
+            view: view,
+            layer: parcelLayer,
+            attachmentsEnabled: true,
+            container: "tableDiv",
+            fieldConfigs: [{
+                name: "UseType",
+                label: "Type of Land"
+            }]
+        })
+
         const query = function queryFeatureLayer(extent) {
 
             const parcelQuery = {
@@ -62,20 +74,15 @@ require([
 
             parcelLayer.queryFeatures(parcelQuery).
             then((results) => {
-                console.log(results.features.length);
-                console.log(results.features);
-                //this is how you would get the outfields to appear in the response.
-                results.features.forEach((hit) =>{
-                    console.log(hit.attributes)         
-                })
-            displayResults(results)}).
+                displayResults(results)}).
                 catch((err) => {
                     console.log("here's what went wrong: " + err)
                 })
         }
        
-        function displayResults(results){
 
+        function displayResults(results){
+                console.log("ding")
             const symbol = {
                 type: "simple-fill",
                 color: [20, 130, 200, 0.5],
@@ -95,11 +102,18 @@ require([
                 results.popupTemplate = popupTemplate;
                 return results;        
             });
+//experimental line trying to add information from the query to the document. In this case it's returning only the 'useType' of the queries displayed.
+            // results.features.forEach((results) => {
+            //     console.log(results.attributes)
+            //     let entry = document.createElement("p");
+            //     entry.innerHTML = results.attributes.UseType;
+            //     tableDiv.appendChild(entry)
+            // })
 
             view.popup.close()
             view.graphics.removeAll();
             view.graphics.addMany(results.features)
-
+            console.log("dAng")
         }
 
 console.log("nobody came")
